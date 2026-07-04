@@ -15,11 +15,9 @@ class TelegramAuthService
             ];
         }
 
-        \Illuminate\Support\Facades\Log::info('initData received', ['data' => $initData]);
-
         $botToken = config('services.telegram.bot_token');
 
-        // Парсимо вручну без parse_str щоб уникнути подвійного екранування
+        // Парсимо вручну зберігаючи оригінальні значення
         $pairs = explode('&', $initData);
         $params = [];
         foreach ($pairs as $pair) {
@@ -30,18 +28,13 @@ class TelegramAuthService
             $params[$key] = urldecode($value);
         }
 
-        // Нормалізуємо user поле
-        if (isset($params['user'])) {
-            $params['user'] = str_replace(['\"', '\\/'], ['"', '/'], $params['user']);
-        }
-
         $hash = $params['hash'] ?? null;
         if (!$hash) return null;
 
-        // Убираем hash из параметров
+        // Видаляємо ТІЛЬКИ hash, signature залишаємо
         unset($params['hash']);
 
-        // Сортируем и собираем строку для проверки
+        // Сортуємо і збираємо рядок
         ksort($params);
         $dataCheckString = implode("\n", array_map(
             fn($k, $v) => "$k=$v",
@@ -49,27 +42,14 @@ class TelegramAuthService
             array_values($params)
         ));
 
-        // Генерируем секретный ключ
         $secretKey = hash_hmac('sha256', $botToken, 'WebAppData', true);
-
-        // Проверяем подпись
         $expectedHash = hash_hmac('sha256', $dataCheckString, $secretKey);
-
-        \Illuminate\Support\Facades\Log::info('hash comparison', [
-            'expected' => $expectedHash,
-            'received' => $hash,
-            'match' => hash_equals($expectedHash, $hash),
-            'dataCheckString' => $dataCheckString,
-            'botToken_prefix' => substr($botToken, 0, 10),
-        ]);
 
         if (!hash_equals($expectedHash, $hash)) return null;
 
-        // Проверяем что данные не устарели (1 час)
         $authDate = $params['auth_date'] ?? 0;
         if (time() - $authDate > 3600) return null;
 
-        // Возвращаем данные юзера
         return json_decode($params['user'], true);
     }
 }
