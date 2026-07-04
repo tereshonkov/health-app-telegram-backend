@@ -27,8 +27,7 @@ class TelegramAuthService
             if ($pos === false) continue;
             $key = substr($pair, 0, $pos);
             $value = substr($pair, $pos + 1);
-            // Декодуємо тільки user поле
-            $params[$key] = $key === 'user' ? urldecode($value) : $value;
+            $params[$key] = urldecode($value);
         }
 
         // Нормалізуємо user поле
