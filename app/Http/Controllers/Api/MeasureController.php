@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use App\Services\MeasureService;
 use App\Models\Measure;
 use Illuminate\Http\JsonResponse;
-use App\DTOs\MeasureDTO;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 use App\Http\Resources\MeasureResource;
@@ -58,7 +57,7 @@ class MeasureController extends Controller
      */
     public function show(string $id)
     {
-        //
+        // not implemented
     }
 
     /**
@@ -66,7 +65,7 @@ class MeasureController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        // not implemented
     }
 
     /**
