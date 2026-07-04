@@ -22,6 +22,11 @@ class TelegramAuthService
         // Парсим initData
         parse_str($initData, $params);
 
+        // Фіксуємо екранування в user полі
+        if (isset($params['user'])) {
+            $params['user'] = stripslashes($params['user']);
+        }
+
         $hash = $params['hash'] ?? null;
         if (!$hash) return null;
 
