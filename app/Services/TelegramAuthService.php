@@ -15,6 +15,8 @@ class TelegramAuthService
             ];
         }
 
+        \Illuminate\Support\Facades\Log::info('initData received', ['data' => $initData]);
+
         $botToken = config('services.telegram.bot_token');
 
         // Парсим initData
