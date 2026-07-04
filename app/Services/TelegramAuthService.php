@@ -19,12 +19,15 @@ class TelegramAuthService
 
         $botToken = config('services.telegram.bot_token');
 
-        // Парсим initData
-        parse_str($initData, $params);
-
-        // Фіксуємо екранування в user полі
-        if (isset($params['user'])) {
-            $params['user'] = stripslashes($params['user']);
+        // Парсимо вручну без parse_str щоб уникнути подвійного екранування
+        $pairs = explode('&', $initData);
+        $params = [];
+        foreach ($pairs as $pair) {
+            $pos = strpos($pair, '=');
+            if ($pos === false) continue;
+            $key = substr($pair, 0, $pos);
+            $value = substr($pair, $pos + 1);
+            $params[$key] = urldecode($value);
         }
 
         $hash = $params['hash'] ?? null;
