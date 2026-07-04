@@ -44,6 +44,14 @@ class TelegramAuthService
         // Проверяем подпись
         $expectedHash = hash_hmac('sha256', $dataCheckString, $secretKey);
 
+        \Illuminate\Support\Facades\Log::info('hash comparison', [
+            'expected' => $expectedHash,
+            'received' => $hash,
+            'match' => hash_equals($expectedHash, $hash),
+            'dataCheckString' => $dataCheckString,
+            'botToken_prefix' => substr($botToken, 0, 10),
+        ]);
+
         if (!hash_equals($expectedHash, $hash)) return null;
 
         // Проверяем что данные не устарели (1 час)
