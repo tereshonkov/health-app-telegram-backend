@@ -40,8 +40,6 @@ class TelegramAuthService
 
         // Убираем hash из параметров
         unset($params['hash']);
-        // Видаляємо signature — новий параметр Telegram WebApp v9+
-        unset($params['signature']);
 
         // Сортируем и собираем строку для проверки
         ksort($params);
