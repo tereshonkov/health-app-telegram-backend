@@ -11,6 +11,7 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 // Защищённые роуты — нужен токен
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('measures', MeasureController::class);
+    Route::delete('measures', [MeasureController::class, 'clearHistory']);
     Route::apiResource('reminders', ReminderController::class);
     Route::patch('reminders/{reminder}/toggle', [ReminderController::class, 'toggle']);
 });

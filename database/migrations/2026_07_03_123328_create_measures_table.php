@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('measures', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->integer('systolic');
-            $table->integer('diastolic');
-            $table->integer('pulse');
+            $table->integer('systolic')->nullable();
+            $table->integer('diastolic')->nullable();
+            $table->integer('pulse')->nullable();
             $table->text('note')->nullable();
             $table->timestamps();
         });

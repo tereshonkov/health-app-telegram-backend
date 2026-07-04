@@ -1,0 +1,47 @@
+services:
+  health-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        WWWUSER: "${WWWUSER:-1000}"
+    image: health-app
+    container_name: health-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    user: "${WWWUSER:-1000}"
+    environment:
+      WWWUSER: "${WWWUSER:-1000}"
+      LARAVEL_SAIL: 1
+    volumes:
+      - .:/var/www
+    networks:
+      - health-app-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: health_app
+      MYSQL_USER: health_app_user
+      MYSQL_PASSWORD: health_app_password
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    tmpfs:
+      - /var/lib/mysql
+    networks:
+      - health-app-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u $$MYSQL_USER -p$$MYSQL_PASSWORD"]
+      retries: 3
+      timeout: 5s
+      interval: 5s
+
+networks:
+  health-app-network:
+    driver: bridge
