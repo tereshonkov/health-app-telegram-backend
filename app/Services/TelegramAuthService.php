@@ -30,6 +30,11 @@ class TelegramAuthService
             $params[$key] = urldecode($value);
         }
 
+        // Нормалізуємо user поле
+        if (isset($params['user'])) {
+            $params['user'] = str_replace(['\"', '\\/'], ['"', '/'], $params['user']);
+        }
+
         $hash = $params['hash'] ?? null;
         if (!$hash) return null;
 
