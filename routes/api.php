@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\MeasureController;
 use App\Http\Controllers\Api\ReminderController;
 use App\Http\Controllers\Api\PdfController;
+use App\Http\Controllers\Api\TelegramWebhookController;
 use Illuminate\Support\Facades\Route;
 
 // Публичный роут — авторизация
