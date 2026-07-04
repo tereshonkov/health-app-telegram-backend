@@ -6,6 +6,15 @@ class TelegramAuthService
 {
     public function validate(string $initData): array|null
     {
+        if (app()->environment('local') && $initData === 'dev') {
+            return [
+                'id'         => 1,
+                'first_name' => 'Марія',
+                'last_name'  => null,
+                'username'   => 'maria_test',
+            ];
+        }
+
         $botToken = config('services.telegram.bot_token');
 
         // Парсим initData

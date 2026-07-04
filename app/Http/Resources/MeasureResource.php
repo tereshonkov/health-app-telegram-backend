@@ -15,7 +15,7 @@ class MeasureResource extends JsonResource
             'diastolic' => $this->diastolic,
             'pulse'     => $this->pulse,
             'note'      => $this->note,
-            'created_at' => $this->created_at->format('Y-m-d H:i'),
+            'date' => $this->created_at->format('Y-m-d H:i'),
         ];
     }
 }
