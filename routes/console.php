@@ -12,13 +12,18 @@ Artisan::command('inspire', function () {
 
 Schedule::call(function () {
     $now = now()->format('H:i');
-
-    Reminder::query()
+    
+    \Illuminate\Support\Facades\Log::info('Scheduler running', ['time' => $now]);
+    
+    $reminders = Reminder::query()
         ->where('enabled', true)
         ->whereJsonContains('times', $now)
         ->with('user')
-        ->get()
-        ->each(function (Reminder $reminder) {
-            SendReminderNotification::dispatch($reminder);
-        });
+        ->get();
+    
+    \Illuminate\Support\Facades\Log::info('Reminders found', ['count' => $reminders->count()]);
+    
+    $reminders->each(function (Reminder $reminder) {
+        SendReminderNotification::dispatch($reminder);
+    });
 })->everyMinute();
