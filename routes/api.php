@@ -12,7 +12,7 @@ Route::post('/auth/login', [AuthController::class, 'login'])->middleware('thrott
 Route::post('/webhook/telegram', [TelegramWebhookController::class, 'handle']);
 
 // Защищённые роуты — нужен токен
-Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('measures/clear', [MeasureController::class, 'clearHistory']);
     Route::patch('reminders/{reminder}/toggle', [ReminderController::class, 'toggle']);
     Route::get('export/pdf', [PdfController::class, 'export']);
