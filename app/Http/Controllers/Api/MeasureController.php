@@ -22,6 +22,10 @@ class MeasureController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        \Illuminate\Support\Facades\Log::info('Measures index', [
+            'user_id' => $request->user()?->id,
+            'query' => $request->query(),
+        ]);
         $this->authorize('viewAny', Measure::class);
         $limit = $request->query('limit', 10);
         $page = $request->query('page', 1);
