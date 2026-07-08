@@ -1,10 +1,10 @@
 <?php
 
-use App\Jobs\SendReminderNotification;
 use App\Models\Reminder;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
+use \App\Services\ReminderNotificationService;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -23,7 +23,7 @@ Schedule::call(function () {
 
     \Illuminate\Support\Facades\Log::info('Reminders found', ['count' => $reminders->count()]);
 
-    $reminders->each(function (Reminder $reminder) {
-        (new \App\Jobs\SendReminderNotification($reminder))->handle();
+    $reminders->each(function (\App\Models\Reminder $reminder) {
+        app(ReminderNotificationService::class)->send($reminder);
     });
 })->everyMinute();
