@@ -25,8 +25,9 @@ class MeasureController extends Controller
         $this->authorize('viewAny', Measure::class);
         $limit = $request->query('limit', 10);
         $page = $request->query('page', 1);
+        $days = $request->query('days') ? (int) $request->query('days') : null;
 
-        $paginator = $this->measureService->getAllMeasures((int)$request->user()->id, (int)$limit, (int)$page);
+        $paginator = $this->measureService->getAllMeasures((int)$request->user()->id, (int)$limit, (int)$page, $days);
 
         $resourceCollection = MeasureResource::collection($paginator);
 

@@ -10,10 +10,11 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class MeasureService
 {
-    public function getAllMeasures(int $userId, int $limit = 10, int $page = 1): LengthAwarePaginator
+    public function getAllMeasures(int $userId, int $limit = 10, int $page = 1, ?int $days = null): LengthAwarePaginator
     {
         return Measure::query()
             ->where('user_id', $userId)
+            ->when($days, fn($q) => $q->where('created_at', '>=', now()->subDays($days)))
             ->latest()
             ->paginate($limit, ['*'], 'page', $page);
     }
