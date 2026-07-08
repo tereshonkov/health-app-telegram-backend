@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 use App\Http\Resources\MeasureResource;
+use Illuminate\Support\Facades\Log;
 
 class MeasureController extends Controller
 {
@@ -22,9 +23,13 @@ class MeasureController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        \Illuminate\Support\Facades\Log::info('Measures index', [
+        Log::info('Measures index', [
             'user_id' => $request->user()?->id,
             'query' => $request->query(),
+        ]);
+        Log::info('Headers', [
+            'authorization' => $request->header('Authorization'),
+            'accept' => $request->header('Accept'),
         ]);
         $this->authorize('viewAny', Measure::class);
         $limit = $request->query('limit', 10);
