@@ -9,7 +9,7 @@
 <body>
 
     <div class="header">
-        <h1>Health Report</h1>
+        <h1>Твой Отчёт</h1>
         <p>{{ $user->first_name }} {{ $user->last_name }} &nbsp;·&nbsp; За {{ $days }} дней &nbsp;·&nbsp;
             {{ now()->format('d.m.Y') }}</p>
     </div>
