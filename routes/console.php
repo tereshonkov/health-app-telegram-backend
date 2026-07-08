@@ -13,13 +13,17 @@ Artisan::command('inspire', function () {
 Schedule::call(function () {
     $now = now()->format('H:i');
 
-    Reminder::query()
+    \Illuminate\Support\Facades\Log::info('Scheduler running', ['time' => $now]);
+
+    $reminders = Reminder::query()
         ->where('enabled', true)
-        ->whereJsonContains('times', $now)
+        ->where('times', 'LIKE', "%\"{$now}\"%")
         ->with('user')
-        ->get()
-        ->each(function (Reminder $reminder) {
-            // Синхронно без черги
-            (new \App\Jobs\SendReminderNotification($reminder))->handle();
-        });
+        ->get();
+
+    \Illuminate\Support\Facades\Log::info('Reminders found', ['count' => $reminders->count()]);
+
+    $reminders->each(function (Reminder $reminder) {
+        (new \App\Jobs\SendReminderNotification($reminder))->handle();
+    });
 })->everyMinute();
