@@ -39,7 +39,14 @@ class AuthController extends Controller
         );
 
         // Удаляем старые токены и создаём новый
-        $user->tokens()->delete();
+        // $user->tokens()->delete();
+
+        // Створюємо новий токен, лишаючи старі для інших пристроїв
+        // але видаляємо токени старші 30 днів щоб не накопичувались
+        $user->tokens()
+            ->where('created_at', '<', now()->subDays(30))
+            ->delete();
+
         $token = $user->createToken('telegram')->plainTextToken;
 
         return response()->json([
