@@ -27,6 +27,12 @@ class SendReminderNotification implements ShouldQueue
 
         if (!$user->telegram_id) return;
 
+        \Illuminate\Support\Facades\Log::info('Sending reminder', [
+            'reminder' => $this->reminder->name,
+            'telegram_id' => $user->telegram_id,
+            'time' => now()->format('H:i'),
+        ]);
+
         Http::post("https://api.telegram.org/bot" . config('services.telegram.bot_token') . "/sendMessage", [
             'chat_id' => $user->telegram_id,
             'text' => "Привет! Пора принять *{$this->reminder->name}* ({$this->reminder->dose})",
@@ -43,6 +49,11 @@ class SendReminderNotification implements ShouldQueue
                     ],
                 ]],
             ]),
+        ]);
+
+        \Illuminate\Support\Facades\Log::info('Telegram response', [
+            'status' => $response->status(),
+            'body' => $response->json(),
         ]);
     }
 }
