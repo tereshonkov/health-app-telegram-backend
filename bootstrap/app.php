@@ -23,8 +23,6 @@ return Application::configure(basePath: dirname(__DIR__))
             fn(Request $request) => $request->is('api/*'),
         );
         $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, Request $request) {
-            if ($request->is('api/*')) {
-                return response()->json(['message' => 'Unauthenticated.'], 401);
-            }
+            return response()->json(['message' => 'Unauthenticated.'], 401);
         });
     })->create();
