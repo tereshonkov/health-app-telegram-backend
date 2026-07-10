@@ -44,4 +44,4 @@ Schedule::call(function () {
         app(ReminderNotificationService::class)->sendCourseFinished($reminder);
         $reminder->update(['enabled' => false]);
     }
-})->dailyAt('22:15');
+})->dailyAt('00:00');

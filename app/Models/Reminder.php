@@ -38,7 +38,7 @@ class Reminder extends Model
         if (!$this->course_days || !$this->started_at) return false;
 
         $endDate = $this->started_at->copy()->addDays($this->course_days);
-        return now()->startOfDay()->greaterThan($endDate->startOfDay());
+        return now()->startOfDay()->greaterThanOrEqualTo($endDate->startOfDay());
     }
 
     public function user()
