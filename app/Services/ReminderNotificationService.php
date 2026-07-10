@@ -46,7 +46,7 @@ class ReminderNotificationService
 
         Http::post("https://api.telegram.org/bot" . config('services.telegram.bot_token') . "/sendMessage", [
             'chat_id'    => $user->telegram_id,
-            'text'       => "✅ Курс приёма *{$reminder->name}* ({$reminder->dose}) завершён!\n\nНапоминания отключены. Будьте здоровы! 💙",
+            'text'       => "✅ Курс приёма *{$reminder->name}* ({$reminder->dose}) завершён!",
             'parse_mode' => 'Markdown',
         ]);
     }
