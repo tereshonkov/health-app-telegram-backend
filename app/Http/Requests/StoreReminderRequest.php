@@ -27,6 +27,7 @@ class StoreReminderRequest extends FormRequest
             'dose'    => ['required', 'string', 'max:100'],
             'times'   => ['required', 'array', 'min:1', 'max:6'],
             'times.*' => ['required', 'string', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+            'course_days' => ['nullable', 'integer', 'min:1', 'max:365'],
         ];
     }
 
