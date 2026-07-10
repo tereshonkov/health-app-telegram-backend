@@ -20,6 +20,8 @@ class ReminderResource extends JsonResource
             'dose'       => $this->dose,
             'times'      => $this->times,
             'enabled'    => $this->enabled,
+            'course_days' => $this->course_days,
+            'days_left'   => $this->daysLeft(),
             'created_at' => $this->created_at->format('Y-m-d H:i'),
         ];
     }
