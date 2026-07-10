@@ -37,4 +37,17 @@ class ReminderNotificationService
             'body'   => $response->json(),
         ]);
     }
+
+    public function sendCourseFinished(Reminder $reminder): void
+    {
+        $user = $reminder->user;
+
+        if (!$user->telegram_id) return;
+
+        Http::post("https://api.telegram.org/bot" . config('services.telegram.bot_token') . "/sendMessage", [
+            'chat_id'    => $user->telegram_id,
+            'text'       => "✅ Курс приёма *{$reminder->name}* ({$reminder->dose}) завершён!\n\nНапоминания отключены. Будьте здоровы! 💙",
+            'parse_mode' => 'Markdown',
+        ]);
+    }
 }
