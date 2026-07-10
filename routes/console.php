@@ -16,20 +16,6 @@ Schedule::call(function () {
 
     Log::info('Scheduler running', ['time' => $now]);
 
-    // Спочатку перевіряємо завершені курси
-    $finishedCourses = Reminder::query()
-        ->where('enabled', true)
-        ->whereNotNull('course_days')
-        ->whereNotNull('started_at')
-        ->with('user')
-        ->get()
-        ->filter(fn($r) => $r->isCourseFinished());
-
-    foreach ($finishedCourses as $reminder) {
-        app(ReminderNotificationService::class)->sendCourseFinished($reminder);
-        $reminder->update(['enabled' => false]);
-    }
-
     $reminders = Reminder::query()
         ->where('enabled', true)
         ->where('times', 'LIKE', "%\"{$now}\"%")
@@ -42,3 +28,20 @@ Schedule::call(function () {
         app(ReminderNotificationService::class)->send($reminder);
     });
 })->everyMinute();
+
+Schedule::call(function () {
+    Log::info('Checking for finished courses...');
+
+    $finishedCourses = Reminder::query()
+        ->where('enabled', true)
+        ->whereNotNull('course_days')
+        ->whereNotNull('started_at')
+        ->with('user')
+        ->get()
+        ->filter(fn($r) => $r->isCourseFinished());
+
+    foreach ($finishedCourses as $reminder) {
+        app(ReminderNotificationService::class)->sendCourseFinished($reminder);
+        $reminder->update(['enabled' => false]);
+    }
+})->dailyAt('22:15');
