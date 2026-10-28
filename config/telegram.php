@@ -44,6 +44,9 @@ return [
                 App\Console\Commands\Telegram\StartCommand::class,
             ],
         ],
+        'birthday' => [
+            'token' => env('BIRTHDAY_BOT_TOKEN'),
+        ],
 
         //        'mySecondBot' => [
         //            'token' => '123456:abc',
@@ -192,8 +195,7 @@ return [
                 'status', // Shared Command Name.
                 'Acme\Project\Commands\BotCommand' // Full Path to Command Class.
            ],
-        */
-    ],
+        */],
 
     /*
     |--------------------------------------------------------------------------

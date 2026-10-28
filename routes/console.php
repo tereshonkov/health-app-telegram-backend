@@ -45,3 +45,5 @@ Schedule::call(function () {
         $reminder->update(['enabled' => false]);
     }
 })->dailyAt('00:00');
+
+Schedule::command('birthdays:congratulate')->dailyAt('09:00');
