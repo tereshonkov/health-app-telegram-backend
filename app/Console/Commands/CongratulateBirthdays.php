@@ -2,8 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Anniversary;
 use App\Models\Birthday;
 use App\Services\BirthdayGreetingService;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Telegram\Bot\Laravel\Facades\Telegram;
@@ -11,36 +13,35 @@ use Telegram\Bot\Laravel\Facades\Telegram;
 class CongratulateBirthdays extends Command
 {
     protected $signature = 'birthdays:congratulate
-    {--dry-run : Show messages without sending}
-    {--date= : Pretend today is this date (Y-m-d), for testing}';
+        {--dry-run : Show messages without sending}
+        {--date= : Pretend today is this date (Y-m-d), for testing}';
 
-    protected $description = 'Send birthday greetings to the friends chat';
+    protected $description = 'Send birthday and anniversary greetings to the friends chat';
 
     public function handle(BirthdayGreetingService $greetings): int
     {
         $today = $this->option('date')
-            ? \Carbon\Carbon::parse($this->option('date'))
+            ? Carbon::parse($this->option('date'))
             : now();
 
-        $birthdays = Birthday::query()
-            ->where(function ($q) use ($today) {
-                $q->onDate($today);
+        $greetingsToSend = collect();
 
-                if (! $today->isLeapYear() && $today->month === 2 && $today->day === 28) {
-                    $q->orWhere(fn($q) => $q->where('month', 2)->where('day', 29));
-                }
-            })
+        Birthday::onDate($today)
             ->notCongratulatedIn($today->year)
-            ->get();
+            ->get()
+            ->each(fn(Birthday $b) => $greetingsToSend->push([$b, $greetings->buildMessage($b)]));
 
-        if ($birthdays->isEmpty()) {
-            $this->info('No birthdays today.');
+        Anniversary::onDate($today)
+            ->notCongratulatedIn($today->year)
+            ->get()
+            ->each(fn(Anniversary $a) => $greetingsToSend->push([$a, $greetings->buildAnniversaryMessage($a)]));
+
+        if ($greetingsToSend->isEmpty()) {
+            $this->info('Nothing to celebrate today.');
             return self::SUCCESS;
         }
 
-        foreach ($birthdays as $birthday) {
-            $text = $greetings->buildMessage($birthday);
-
+        foreach ($greetingsToSend as [$model, $text]) {
             if ($this->option('dry-run')) {
                 $this->line("[dry-run] {$text}");
                 continue;
@@ -52,15 +53,16 @@ class CongratulateBirthdays extends Command
                     'text'    => $text,
                 ]);
 
-                $birthday->update(['last_congratulated_year' => $today->year]);
+                $model->update(['last_congratulated_year' => $today->year]);
 
-                Log::info('Birthday greeting sent', ['birthday_id' => $birthday->id]);
+                Log::info('Greeting sent', ['type' => class_basename($model), 'id' => $model->id]);
             } catch (\Throwable $e) {
-                Log::error('Birthday greeting failed', [
-                    'birthday_id' => $birthday->id,
-                    'error'       => $e->getMessage(),
+                Log::error('Greeting failed', [
+                    'type'  => class_basename($model),
+                    'id'    => $model->id,
+                    'error' => $e->getMessage(),
                 ]);
-                $this->error("Failed for {$birthday->name}: {$e->getMessage()}");
+                $this->error('Failed for ' . class_basename($model) . " #{$model->id}: {$e->getMessage()}");
             }
         }
 
